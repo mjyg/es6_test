@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="../../../node_modules/vue/dist/vue.js"></script>
+</head>
+<body>
+  <div id="app">
+    <span :title="msg">
+      {{msg}}
+    </span>
+    <todo-item1 v-for="item in list" :todo="item" :key="item.id"></todo-item1>
+  </div>
+  of
+  <script>
+    let vue = new Vue({
+      el: '#app',
+      data: {
+          msg: 'hello' + new Date().toLocaleString(),
+          list: [{id: 0, text: '蔬菜'},
+            {id : 1, text: '水果'}],
+      },
+    });
+    Vue.component('todo-item1', {
+      props: ['todo'],
+      template: '<li>{{todo.text}}</li>',
+    });
+  </script>
+</body>
+</html>
