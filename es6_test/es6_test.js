@@ -156,3 +156,35 @@ function mostLetter(str) {
   return most;
 }
 console.log(mostLetter('a'));
+
+//比较函数sort()
+function compare(num1, num2) {
+  if (num1 > num2) {
+    return -1;
+  }
+  if (num1 === num2) {
+    return 0;
+  }
+  return 1;
+}
+console.log([2,1,100,'a'].sort(compare));  //[ 'a', 100, 2, 1 ]
+
+//按对象里某个属性排序
+function createCompare(name) {
+  return function (obj1, obj2) {
+    let num1 = obj1[name];
+    let num2 = obj2[name];
+    if (num1 > num2) {
+      return 1;
+    }
+    if (num1 === num2) {
+      return 0;
+    }
+    return -1;
+  }
+}
+let arrry = [{name: 'a', age: 45}, {name:'b', age: 20}];
+console.log(arrry.sort(createCompare('name')));
+//[ { name: 'a', age: 45 }, { name: 'b', age: 20 } ]
+console.log(arrry.sort(createCompare('age')));
+//[ { name: 'b', age: 20 }, { name: 'a', age: 45 } ]

@@ -44,7 +44,7 @@ var t = function d() {
 console.log('aaaaaaaa');
 console.log('------------------');
 
-//块级作用域与函数声明(js作用域分为函数作用域和块级作用域)
+//块级作用域与函数声明(js作用域分为全局作用域、函数作用域和块级作用域)
 function r() {
   console.log('outside');
 }
