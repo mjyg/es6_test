@@ -40,7 +40,7 @@ console.log(p1 instanceof Person); // true （既是Object的实例也是Person�
 
 console.log(p1.sayName === p2.sayName);  //false
 
-//构造函数模式可以用来标志对象的具体类型，但其定义的方法要在每个实例上创建一遍
+//构造函数模式可以用来标志对象的具体类型，但其定义的方法要在每个实例上创建一遍，无法做到函数复用
 
 //b.构造函数模式2
 function Person2(name, age) {
@@ -112,8 +112,8 @@ p1 = new Person4();
 console.log(p1 instanceof Person4);  //true
 console.log(p1.constructor);  //Object (无法指向原构造函数Person)
 
-//原型模式简单写法产生的问题1：重写了原型对象以后，constructor属性指向其构造函数,此处直接用Object定义
-// 的，其constructor属性指向Object
+//原型模式简单写法产生的问题1:由于对象的constructor属性并非指向其构造函数,而是指向其构造函数的原型对象
+// 的constructor属性，此处构造函数的原型对象指向Object，其constructor属性指向Object
 
 //可以在重写原型时显示添加constructor属性指向原来的构造函数
 Person4.prototype = {

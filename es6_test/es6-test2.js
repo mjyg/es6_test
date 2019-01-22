@@ -2,7 +2,7 @@
 let a = [];
 for (var i = 0; i < 3;i ++) {
   //TDZ开始
-  // i = 0;  //let声明i后，该区块形成暂时性死区，声明之前使用都会报错
+  // i = 0;  //let声明i后，该代码块形成暂时性死区，声明之前使用都会报错
   // console.log(i); //TDZ结束
   let i = 'abc';
   console.log(i);
