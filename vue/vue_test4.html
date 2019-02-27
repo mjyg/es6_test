@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Class与Style绑定</title>
+    <script src="../node_modules/vue/dist/vue.js"></script>
+</head>
+<body>
+    <div id="app">
+        <!--绑定class-->
+        <!--对象语法（键名为CSS类名，值为变量）-->
+        <button :class="{btnStyle: useBtn, btnStyle2: useBtn2}">Button</button>
+
+        <!--数组语法（数组元素为css类名）-->
+         <button :class="[style, style2]">Button</button>
+
+        <!--结合数组对象语法-->
+        <button :class="[{btnStyle: useBtn}, style2]">Button</button>
+
+        <!--绑定内联样式-->
+        <!--对象语法（键名为样式名，键值为样式值）-->
+        <div :style="{color: divColor, fontSize: divSize}">你好</div>
+
+        <!--数组语法（元素为样式）-->
+        <div :style="[style3, style4]">你好</div>
+    </div>
+    <script>
+        let vm = new Vue({
+            el: '#app',
+            data: {
+               useBtn: true,
+               useBtn2: true,
+               style: 'btnStyle',
+               style2: 'btnStyle2',
+               divColor: 'red',
+               divSize: '50px',
+               style3: {
+                   color: 'red'
+               },
+               style4: {
+                   fontSize: '90px'
+               },
+            },
+        });
+    </script>
+</body>
+<style type="text/css">
+    .btnStyle {
+        margin-top: 10px;
+        color: red;
+    }
+    .btnStyle2 {
+        margin-left: 10px;
+    }
+</style>
+</html>

@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>组件</title>
+    <script src="../node_modules/vue/dist/vue.js"></script>
+</head>
+<body>
+    <div id="app">
+        <button-counter></button-counter>
+    </div>
+     <div id="app2">
+        <button-counter2></button-counter2>
+    </div>
+    <div id="fruit">
+        <fruit-component name="fruit" :num="num"></fruit-component>
+    </div>
+    <div id="app4">
+        <base-checkbox v-model="flag"></base-checkbox>
+        <span>you chose {{flag}}</span>
+        <blog-post @enlarge-text="doSomething" :num="num"></blog-post>
+    </div>
+    <script>
+        // 定义一个名为 button-counter 的新组件(注意，html页面属于非字符串模板，组件名出现大写会报错)
+        //全局注册
+        Vue.component('button-counter', {
+            data: function () {
+                return {
+                    count: 0,
+                };
+            },
+            template: '<button @click="count ++">click {{count}} times</button>'
+        });
+        //在Vue实例中使用该自定义的组件
+        let vm = new Vue({
+           el: '#app',
+        });
+
+        //局部注册
+        let buttonCounter2 = {
+            data: function () {
+                return {
+                    count: 0,
+                };
+            },
+            template: '<button @click="count ++">click {{count}} times</button>'
+        };
+        let vm2 = new Vue({
+            el: '#app2',
+            components: {
+                buttonCounter2,
+            },
+        });
+
+        //使用prop：prop会通过父组件向子组件传递数据，形成了一个单向下行数据流，父级的prop更新会向下流
+        // 到子组件中(和组件名一样，在DOM只能使用小写字母表示)
+        let fruitComponent = {
+            // props: ['name', 'num'],  //数组表示法,prop名以字符串表示
+            props: {                    //对象表示法，可以规定prop的要求
+              name: [String,Object], //多个可选的类型
+              num: {
+                  type: Number,   //类型
+                  required: true,  //必填
+                  default: 0,    //默认值
+              },
+            },
+            template: '<span>There are {{num}} {{name}}</span>'
+        };
+        let vm3 = new Vue({
+           el: '#fruit',
+           data: {
+             num: 4,
+           },
+           components: {
+               fruitComponent,
+           }
+        });
+
+        //自定义组件的v-model:通过v-model从子组件向父组件传递数据
+        //一个组件上的 v-model 默认会利用名为 value 的 prop 和名为 input 的事件，但是像单选框、复选
+        // 框等类型的输入控件可能会将 value 特性用于不同的目的。model 选项可以用来避免这样的冲突
+        Vue.component('base-checkbox', {
+            model: {
+                prop: 'checkeds',
+                event: 'change',
+            },
+            props: {
+                checkeds: Boolean,
+            },
+            template:`<input type="checkbox" :checked="checkeds"
+                        @change="$emit('change', $event.target.checked)">`
+        });
+
+        //通过事件从子组件向父组件发送消息
+        Vue.component('blog-post', {
+            props: ['num'],
+            template:`<button @click="$emit('enlarge-text', 2)">{{num}}</button>`
+        });
+        let vm4 = new Vue({
+            el: '#app4',
+            data: {
+                flag: false,
+                num: 0,
+            },
+            methods: {
+              doSomething: function (id) {
+                  this.num ++;
+              }
+            },
+        });
+    </script>
+</body>
+</html>

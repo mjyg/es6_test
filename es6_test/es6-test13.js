@@ -170,6 +170,42 @@ proxy7.name = 'a';
 //如果目标对象自身的某个属性，不可写且不可配置，那么set方法将不起作用。
 
 
+//3.apply():拦截函数的调用，call和apply操作,
+// 接受三个参数，分别是目标对象、目标对象的上下文对象（this）和目标对象的参数数组。
+let ff =  function(a,b){
+    console.log('调用函数');
+};
+let proxy8 = new Proxy(ff, {
+    apply: function (target, ctx, args) {
+        console.log('参数为：', args);
+        target();
+    },
+});
+proxy8(6,7);//参数为： [ 6, 7 ]   调用函数
+proxy8.call(null, 6,7);//参数为： [ 6, 7 ]   调用函数
+proxy8.apply(null, [6,7]);//参数为： [ 6, 7 ]   调用函数
+
+//4.has():用来拦截对象的属性，参数为目标对象和要拦截的属性名
+let obj9 = {
+    _name: 'aa',
+    age: 9,
+};
+let proxy9 = new Proxy(obj9, {
+   has: function (target, property) {
+       if (property[0] === '_') {
+            return false
+       }
+       return property in target;
+   }
+});
+for (let key in proxy9) {
+    console.log(key);
+} //_name age  (for ... in 循环不生效)
+
+console.log('_name' in proxy9); // false
+
+
+
 
 
 

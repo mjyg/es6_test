@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>计算属性和侦听器</title>
+    <script src="../node_modules/vue/dist/vue.js"></script>
+</head>
+<body>
+    <div id="app">
+        <!--使用计算属性避免模板中逻辑过重-->
+        <span>{{revertMsg}}</span>
+        <span>{{now}}</span>
+        <span>{{lastWord}}</span>
+         <span>{{a}}</span>
+    </div>
+    <script>
+        let vm = new Vue({
+            el: '#app',
+            data: {
+              msg: 'hello',
+              a: '',
+            },
+            //计算属性:用来定义需要依赖某些属性的属性
+            computed: {
+                //计算属性是基于依赖进行缓存，以来改变才会重新计算，如果定义成方法，则每次都会计算
+                revertMsg: function () {
+                    return this.msg.split('').reverse().join('');
+                },
+                now: function () {
+                    return Date.now();//Date.now() 不是响应式依赖,now不再更新
+                },
+                //计算属性默认只有getter,需要时也可以定义setter来在计算属性改变后要做的事
+                lastWord: {
+                    get: function () {
+                        return this.msg;
+                    },
+                    set: function(newVal) {
+                      this.a = newVal;
+                    },
+                }
+            },
+            //侦听属性：侦听某个属性（包括计算属性）发生变化是要做的事
+            watch: {
+                revertMsg: function (newVal, oldVal) {
+                    alert('msg is change');
+                },
+            },
+        });
+        vm.msg = 'world';  //revertMsg会更新
+        vm.lastWord = 'hahah';  //直接修改计算属性才会调用其set方法，上一句代码只会调用get方法
+    </script>
+</body>
+</html>

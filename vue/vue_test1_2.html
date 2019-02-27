@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Vue实例_Vue生命周期</title>
+    <script src="../node_modules/vue/dist/vue.js"></script>
+</head>
+<body>
+    <div id="app">
+        <span>{{msg}}</span>
+        <h1>{{msg + '这是在outer HTML中的'}}</h1>
+    </div>
+    <script>
+    let vm = new Vue({
+        // el: '#app${
+        data: {
+            msg: 'hello',
+        },
+        template:'<h1>{{msg +\'这是在template中的\'}}</h1>',
+        // render: function(createElement) {
+        //     return createElement('h1${ 'this is createElement')
+        // },
+        beforeCreate: function(){
+            alert('--------beforeCreate创建前状态----------');
+            alert(`el       : ${this.$el}`);  // undefined （未初始化）
+            alert(`data     :${this.$data}`);  // undefined（未初始化）
+            alert(`msg      :${this.msg}`);// undefined
+        },
+        created: function(){
+            alert('--------created创建完毕状态----------');
+            alert(`el       :${this.$el}`);  // undefined（未初始化）
+            alert(`data     :${ JSON.stringify(this.$data)}`);  //{msg: "hello"}（已初始化）
+            alert(`msg      :${ this.msg}`); //hello
+        },
+
+        //beforeCreate和created之间：
+        //1.进行了数据和data属性的绑定
+        //2.此时还是没有el选项
+
+        beforeMount: function(){
+            alert('--------beforeMount挂载前状态----------');
+            alert(`el       :${ this.$el.innerHTML}`);  //（已初始化,el未被渲染，为虚拟节点）
+            // <div id="app">
+            //     <span>{{msg}}</span>
+            //     <h1>{{msg + '这是在outer HTML中的'}}</h1>
+            // </div>
+            alert(`data     :${ JSON.stringify(this.$data)}`);  //{msg: "hello"}（已初始化）
+            alert(`msg      :${ this.msg}`); //hello
+        },
+
+        // created和beforeMount之间：
+        //1.首先判断有没有el选项，如果没有则停止编译，直到调用vm.$mount('#app')手动挂载该实例到DOM元素
+        //  （如果 Vue 实例在实例化时没有收到 el 选项，则它处于“未挂载”状态，没有关联的 DOM 元素）
+        //2.如果有el选项，则接着判断有没有template选项，若有，则渲染template中的html（将其作为模板编
+        //  译成render函数）,否则渲染外部html（将外部HTML作为模板编译），可以看到template中的模板优先
+        //  级要高于outer HTML的优先级。
+        //  （el的判断要在template之前是因为vue需要通过el找到对应的outer template。）
+        //3.如果有render函数选项，则先渲染render函数返回的html，优先级排名：
+        //  render函数选项 > template选项 > outer HTML.
+
+        mounted: function () {
+            alert('--------mounted挂载完毕状态----------');
+            alert(`el       :${ this.$el.innerHTML}`);  // <h1>helllo这是在template中的</h1>
+            alert(`data     :${  JSON.stringify(this.$data)}`);  //{msg: "hello"}
+            alert(`msg      :${ this.msg}`); //hello
+        },
+
+        //beforeMount和mounted之间：
+        //给Vue实例添加$el节点，并且替换掉挂载的DOM元素
+
+        beforeUpdate: function () {
+            alert('--------beforeUpdate更新前状态----------');
+            alert(`el       :${this.$el.innerHTML}`);// <h1>helllo这是在template中的</h1>
+            alert(`data     :${  JSON.stringify(this.$data)}`); //{msg: "数据更新"}
+            alert(`msg      :${ this.msg}`);  //数据更新
+        },
+        //数据更新时调用，发生在虚拟 DOM 重新渲染和打补丁之前。 你可以在这个钩子中进一步地更改状态，这不
+        // 会触发附加的重渲染过程。
+
+        updated: function () {
+            alert('--------updated更新完毕状态----------');
+            alert(`el       :${ this.$el.innerHTML}`);// <h1>数据更新这是在template中的</h1>
+            alert(`data     :${  JSON.stringify(this.$data)}`); //{msg: "数据更新"}
+            alert(`msg      :${ this.msg}`); //{msg: "数据更新"}
+        },
+        // 当这个钩子被调用时，组件 DOM 已经更新，所以你现在可以执行依赖于 DOM 的操作。然而在大多数情况
+        // 下，你应该避免在此期间更改状态，因为这可能会导致更新无限循环。
+
+        beforeDestroy: function () {
+            alert('--------beforeDestroy销毁前状态----------');
+            alert(`el       :${ this.$el.innerHTML}`);// <h1>helllo这是在template中的</h1>
+            alert(`data     :${  JSON.stringify(this.$data)}`);//{msg: "数据更新"}
+            alert(`msg      :${ this.msg}`); //{msg: "数据更新"}
+        },
+        //实例销毁之前调用。在这一步，实例仍然完全可用。
+
+        destroyed: function () {
+            alert('--------destroyed销毁完毕状态----------');
+            alert(`el       :${ this.$el.innerHTML}`);// <h1>helllo这是在template中的</h1>
+            alert(`data     :${  JSON.stringify(this.$data)}`);//{msg: "数据更新"}
+            alert(`msg      :${ this.msg}`); //{msg: "数据更新"}
+        },
+        //Vue 实例销毁后调用。调用后，清理它与其它实例的连接，解绑它的全部指令及事件监听器。
+        //vue实例什么时候回收，这其实本质上是一个js的内存回收问题。只要存在还有其他对象对该实例的引用的
+        // 话，这个实例还是不会被回收的。当当前程序没有对这个实例的引用的时候，这个vue实例就会被释放了。
+    });
+    vm.$mount('#app');
+    vm.msg='数据更新';  //调用beforeUpdate和updated
+    vm.$destroy();//调用beforeDestroy和destroyed（执行该语句时上一句的beforeUpdate和updated未触发）
+    // setTimeout(function () {   //延时销毁则不会影响前一句数据更新调用的beforeUpdate和updated
+    //     vm.$destroy();
+    // },1000);
+    vm.msg = '已经销毁';
+    alert('--------已经销毁----------');
+    alert(`el       :${ vm.$el.innerHTML}`);// <h1>helllo这是在template中的</h1>
+                                            // （数据解绑无法触发视图更新）
+    alert(`data     :${  JSON.stringify(vm.$data)}`);//{msg: "已经销毁"}
+    alert(`msg      :${ vm.msg}`); //{msg: "已经销毁"}
+</script>
+</body>
+</html>

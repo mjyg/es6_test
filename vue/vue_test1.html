@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Vue实例</title>
+    <script src="../node_modules/vue/dist/vue.js"></script>
+</head>
+<body>
+    <div id="app">
+        <span >{{a}}</span>
+        <!--<span >{{b}}</span>-->
+    </div>
+    <script>
+        let data = {
+           a: 3,
+           c: 0,
+           obj: {
+               name: 'Lily',
+           }
+        };
+
+        // Object.freeze(data); //在创建Vue实例之前冻结data,则响应系统无法再追踪变化
+
+        let vm = new Vue({  //创建Vue实例
+            el: '#app',
+            data,
+        });
+        vm.a = 4;   //属性的值发生改变时，视图会产生响应，视图会重新渲染
+        data.a = 6;  //视图会重新渲染
+        data.b = 7; //b不会显示，只有当实例被创建时 data 中存在的属性才是响应式的(可在data中给b设置初始值)
+
+        Object.freeze(data);  //在创建Vue实例之后冻结data，视图依然会响应变化
+        data.a = 9;
+
+        //上面a属于Vue实例vm的数据属性，此外，还有vm的实例属性和方法，以$开头，和用户自定义的属性区分开
+        console.log(vm.$data === data);  //true
+        console.log(vm.$el === document.getElementById('app'));  //true
+
+        //实例方法
+        vm.$watch('a', (oldVal, newVal) => {  //监听属性a
+            vm.c ++;
+            console.log('a is changed:', vm.c);
+            },
+            {deep: true}, //若a是一个对象则需要监听对象内部属性的变化需要设置deep为true
+         );
+        vm.$watch(() => {  //监听属性a+b,相当于监听一个未被定义的计算属性
+            return vm.a + vm.b;
+        }, (oldVal, newVal) => {
+            console.log('a or b is changed:', vm.c);
+        });
+        data.a = 1;  //调用上面的watch
+        vm.$watch('a', (oldVal, newVal) => {  //监听属性a
+            vm.c ++;
+            console.log('a is immediate changed:', vm.c);  //最先打印
+            },
+            {immediate: true}, //立即以当前的a值触发回调函数
+         );
+        // 上面三个watch方法打印顺序：
+        // a is immediate changed: 1
+        // a is changed: 2
+        // a or b is changed: 2
+    </script>
+</body>
+</html>

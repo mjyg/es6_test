@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>插槽、自定义指令</title>
+    <script src="../node_modules/vue/dist/vue.js"></script>
+</head>
+<body>
+    <div id="app">
+        <submit-button></submit-button>
+        <base-layout>
+            <template v-slot:header>
+                Here is Title
+            </template>
+            Here is content
+            <template #footer>
+                Here is footer
+            </template>
+        </base-layout>
+        <input v-focus>
+        <base-layout2></base-layout2>
+        {{user | capitalize}}
+        <base-layout3 :user="user"></base-layout3>
+    </div>
+    <script>
+        //插槽：由父组件控制显示内容，子组件控制显示位置
+        Vue.component('submit-button', {
+           data: function() {
+                return {
+                  name: 'Lily'  ,
+                };
+           },
+           template:`<button type="submit">你好<slot>{{name}}submit</slot></button>`
+        });
+
+        //具名插槽:在父组件中使用templat元素显示具名插槽,使用v-slot指令指定插槽名字
+        Vue.component('base-layout', {
+            template: `
+                <div>
+                    <h1><slot name="header"></slot></h1>
+                    <span><slot></slot></span>
+                    <h1><slot name="footer"></slot></h1>
+                </div>
+            `
+        });
+
+        //自定义指令
+        //注册一个全局自定义指令
+        Vue.directive('focus', {
+            inserted: function (el) {
+                el.focus();
+            }
+        });
+
+        //注册一个局部自定义指令
+         Vue.component('base-layout2', {
+            directives: {
+                focus2: {
+                    inserted: function (el) {
+                        el.focus();
+                    }
+                }
+            },
+             template: `<input v-focus2>`
+        });
+
+        //过滤器
+        //定义全局过滤器
+        Vue.filter('capitalize', function (value) {
+            let s = value.toString();
+            return s.charAt(0).toUpperCase() + s.slice(1);
+        });
+
+        //定义局部过滤器
+        Vue.component('base-layout3', {
+            props: ['user'],
+            filters: {
+                capitalize2: function (value) {
+                    let s = value.toString();
+                    return s.charAt(0).toUpperCase() + s.slice(1);
+                }
+            },
+            template: `<span>{{user | capitalize2}}</span>`
+        });
+
+        let vm = new Vue({
+           el: '#app',
+           data: {
+             user: 'i am a user'
+           },
+        });
+    </script>
+</body>
+</html>
